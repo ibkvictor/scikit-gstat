@@ -10,10 +10,9 @@ from numba import njit, jit
 
 from skgstat.util import shannon_entropy
 
-
 @njit
 def matheron(x):
-    r"""Matheron Semi-Variance
+    r"""Matheron Semi-Variances
 
     Calculates the Matheron Semi-Variance from an array of pairwise differences.
     Returns the semi-variance for the whole array. In case a semi-variance is
@@ -64,6 +63,60 @@ def matheron(x):
         return np.nan
 
     return (1. / (2 * x.size)) * np.sum(np.power(x, 2))
+
+@njit
+def madogram(x):
+    r"""Matheron Semi-Variance
+
+    Calculates the Matheron Semi-Variance from an array of pairwise differences.
+    Returns the semi-variance for the whole array. In case a semi-variance is
+    needed for multiple groups, this function has to be mapped on each group.
+    That is the typical use case in geostatistics.
+
+    Parameters
+    ----------
+    x : numpy.ndarray
+        Array of pairwise differences. These values should be the distances
+        between pairwise observations in value space. If xi and x[i+h] fall
+        into the h separating distance class, x should contain abs(xi - x[i+h])
+        as an element.
+
+    Returns
+    -------
+    numpy.float64
+
+    Notes
+    -----
+
+    This implementation follows the original publication [1]_ and the
+    notes on their application [2]_. Following the 1962 publication [1]_,
+    the semi-variance is calculated as:
+
+    .. math::
+        \gamma (h) = \frac{1}{2N(h)} * \sum_{i=1}^{N(h)}|x|
+
+    with:
+
+    .. math::
+        x = Z(x_i) - Z(x_{i+h})
+
+    where x is exactly the input array x.
+
+    References
+    ----------
+
+    .. [1] Matheron, G. (1962): Traité de Géostatistique Appliqué, Tonne 1.
+       Memoires de Bureau de Recherches Géologiques et Miniéres, Paris.
+
+    .. [2] Matheron, G. (1965): Les variables regionalisées et leur estimation.
+       Editions Masson et Cie, 212 S., Paris.
+
+    """
+    # prevent ZeroDivisionError
+    if x.size == 0:
+        return np.nan
+
+    return (1. / (2 * x.size)) * np.sum(np.abs(x))
 
 
 @njit

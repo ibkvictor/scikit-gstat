@@ -929,6 +929,8 @@ class Variogram(object):
                 self._estimator = estimators.percentile
             elif estimator_name.lower() == 'entropy':
                 self._estimator = estimators.entropy
+            elif estimator_name.lower() == 'madogram':
+                self._estimator = estimators.madogram
             else:
                 raise ValueError(
                     (
