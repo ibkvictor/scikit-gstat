@@ -938,6 +938,7 @@ class Variogram(object):
                         'provide the function.'
                     ) % estimator_name
                 )
+                print(estimators.madogram)
         elif callable(estimator_name):  # pragma: no cover
             self._estimator = estimator_name
         else:
